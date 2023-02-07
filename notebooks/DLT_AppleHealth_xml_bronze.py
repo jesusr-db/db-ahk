@@ -21,27 +21,26 @@
 import dlt
 import gdown
 import os
-import re
-import json
-import ast
-import datetime
+# import re
+# import json
+# import ast
+# import datetime
 import zipfile
-from pyspark.sql.functions import *
-from pyspark.sql.types import *
-from pyspark.sql.window import Window
-from pyspark.sql import Row
+# from pyspark.sql.functions import *
+# from pyspark.sql.types import *
+# from pyspark.sql.window import Window
+# from pyspark.sql import Row
 import xml.etree.ElementTree as ET
 import pandas as pd
 
 
 # gDown variables
-url = "https://drive.google.com/file/d/1v2rviCUFUtEPRKu2aZgx3puaUxSUWhTS/view?usp=sharing"
+url = "" #replace with Gdrive sharing link
 output = "/tmp/export.zip"
 
 # COMMAND ----------
 
-# something changed in XML format - that is causing error between new and old archive
- #dropped onto filesystem
+#gDown files onto /tmp directory of filesystem
 gdown.download(url=url, output=output, quiet=False, fuzzy=True)
 
 # COMMAND ----------
@@ -51,7 +50,7 @@ with zipfile.ZipFile(output, 'r') as zip_ref:
 
 # COMMAND ----------
 
-# if on latest version of IOS - the exported xml is malformed which prevents proper parsing - this script will fix it. Reference below:
+# if on latest version of IOS - the exported xml from apple is malformed which prevents proper parsing with elementree. The script in this cell will fix it. Reference below:
 # https://discussions.apple.com/thread/254202523?answerId=257895569022#257895569022
 
 patch_script="""
