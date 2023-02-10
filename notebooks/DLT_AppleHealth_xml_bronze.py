@@ -26,7 +26,7 @@ import os
 # import ast
 # import datetime
 import zipfile
-# from pyspark.sql.functions import *
+from pyspark.sql.functions import *
 # from pyspark.sql.types import *
 # from pyspark.sql.window import Window
 # from pyspark.sql import Row
@@ -35,7 +35,7 @@ import pandas as pd
 
 
 # gDown variables
-url = "" #replace with Gdrive sharing link
+url = "https://drive.google.com/file/d/xxxxxxx/view?usp=sharing" #replace with Gdrive sharing link
 output = "/tmp/export.zip"
 
 # COMMAND ----------

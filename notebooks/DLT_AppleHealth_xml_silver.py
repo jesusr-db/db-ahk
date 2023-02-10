@@ -7,7 +7,9 @@
 
 import dlt
 import ast
+import json
 from pyspark.sql.functions import *
+from pyspark.sql.types import *
 
 # COMMAND ----------
 
