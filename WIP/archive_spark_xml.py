@@ -3,39 +3,19 @@
 
 # COMMAND ----------
 
-# MAGIC 
-# MAGIC 
-# MAGIC %md 
-# MAGIC # Apple HealthKit for Databricks
-# MAGIC 
-# MAGIC Our bronze notebook is all about data acquisition and landing into our lakehouse. Please follow the process to export Apple HealthKit data on apple site (link). The result of this process is a zip file with several metrics - in our case, we'll upload this zip file to Google drive and then share link (link). There are several other sharing methods - pick whichever is easiest for you (download to icloud, email, etc..). 
-# MAGIC 
-# MAGIC Once in Google Drive - we'll download export.zip using 'gDown', unzip file on the OS Filesystem (not dbfs). If you are on a later version of iOS - you'll have to run this simple script in cell 6 & 7 to fix malformed XML. 
-# MAGIC 
-# MAGIC Final step, we'll parse XML using Elmementree - create dataframe, and ingest into DLT!
 
-# COMMAND ----------
 
-#setup Environment and Libraries
-
-import dlt
 import gdown
 import os
-# import re
-# import json
-# import ast
-# import datetime
 import zipfile
 from pyspark.sql.functions import *
-# from pyspark.sql.types import *
-# from pyspark.sql.window import Window
-# from pyspark.sql import Row
+from pyspark.sql.types import *
 import xml.etree.ElementTree as ET
 import pandas as pd
-
+import re
 
 # gDown variables
-url = "https://drive.google.com/file/d/xxxxx/view?usp=sharing" #replace with Gdrive sharing link
+url = "https://drive.google.com/file/d/1KHnXtK90djbzgnPDxU989JrcE9UxLgjJ/view?usp=sharing" #replace with Gdrive sharing link
 output = "/tmp/export.zip"
 
 # COMMAND ----------
@@ -46,11 +26,10 @@ gdown.download(url=url, output=output, quiet=False, fuzzy=True)
 # COMMAND ----------
 
 with zipfile.ZipFile(output, 'r') as zip_ref:
-    zip_ref.extractall(f'/tmp/')
+  zip_ref.extractall(f'/tmp/')
 
 # COMMAND ----------
 
-# if on latest version of IOS - the exported xml from apple is malformed which prevents proper parsing with elementree. The script in this cell will fix it. Reference below:
 # https://discussions.apple.com/thread/254202523?answerId=257895569022#257895569022
 
 patch_script="""
@@ -113,7 +92,7 @@ patch_script="""
  <HealthData>
   <ExportDate/>
 """
-dbutils.fs.put("file:/tmp/apple_health_export/patch.txt", patch_script, True)
+dbutils.fs.put("file:/tmp/jesus.rodriguez@databricks.com/healthkit/apple_health_export/patch.txt", patch_script, True)
 
 # COMMAND ----------
 
@@ -122,20 +101,48 @@ os.system('cd /tmp/apple_health_export/ && patch < patch.txt')
 
 # COMMAND ----------
 
-# parse our fixed XML and start DLT!
-tree = ET.parse('/tmp/apple_health_export/export.xml') 
-root = tree.getroot()
-record_list = [x.attrib for x in root.iter('Record')]
-data = pd.DataFrame(record_list)
-
-@dlt.table(comment="write2bronze")
-
-def write2bronze():
-  landing=spark.createDataFrame(data)
-  return(landing)
+dbutils.fs.cp('file:/tmp/apple_health_export/export.xml','/tmp/jesus.rodriguez@databricks.com/asdf/')
 
 # COMMAND ----------
 
-@dlt.table(name='datatype',comment='distinct data types in current batch')
-def datatype():
-  return(dlt.read(name='write2bronze').select(col('type')).dropDuplicates())
+xmldata =(spark
+          .read
+          .format('xml')
+#           .schema(schema)
+#           .option("rootTag","HealthData")
+          .option("rowTag","Record")
+          .option("inferSchema","false")
+          .option("valueTag","_stuff")
+          .load("/tmp/jesus.rodriguez@databricks.com/asdf/")
+         )
+display(xmldata)
+
+# COMMAND ----------
+
+xmldata=xmldata.withColumn('_type', regexp_replace('_type', 'HKQuantityTypeIdentifier', ''))
+display(xmldata)
+
+# COMMAND ----------
+
+from pyspark.sql.functions import *
+display(xmldata
+#         .filter(col('value')>= 27)
+        .filter((col('_type')=="HeartRateVariabilitySDNN"))
+        .select('*')
+        .orderBy(col('_startDate').desc()))
+
+# COMMAND ----------
+
+sourcetype_df=xmldata.select(col('_type')).groupBy(col('_type')).agg(count(col('*')).alias('count')).orderBy(col('count').desc())
+display(sourcetype_df)
+
+# COMMAND ----------
+
+# save as managed Table
+xmldata.write.format('delta').partitionBy('_type').mode('overwrite').saveAsTable('uc_demos_jesus_rodriguez.health.hk_arch_bronze')
+sourcetype_df.write.format('delta').mode('overwrite').saveAsTable('uc_demos_jesus_rodriguez.health.hk_arch_sourcetype')
+
+# COMMAND ----------
+
+metadata=spark.read.json('file:/Workspace/Repos/jesus.rodriguez@databricks.com/db-ahk/metadata.json')
+display(metadata)
