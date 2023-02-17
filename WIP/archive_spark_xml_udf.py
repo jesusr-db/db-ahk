@@ -116,8 +116,8 @@ xmldata =(spark
 # display(xmldata)
 
 
-asdf=xmldata.filter(col("value").like("%<Record%")).withColumn("Record", trim(concat(col('value'),lit(' </Record>'))))
-# display(asdf)
+asdf=xmldata.filter(col("value").like("%<Record%")).withColumn("Record", trim(concat(col('value'),lit(' </Record>')))).select(col('Record'))
+display(asdf)
 
 
 # COMMAND ----------
@@ -165,12 +165,12 @@ def parse_xml(xml_string):
 
 # Define a UDF that uses the parse_xml function
 
-parse_xml_udf = udf(parse_xml, StringType())
-# Apply the UDF to the DataFrame to extract the "name" element from the XML string
-df=asdf.withColumn("RecordXml", parse_xml_udf(col('Record')))
+# parse_xml_udf = udf(parse_xml, StringType())
+# # Apply the UDF to the DataFrame to extract the "name" element from the XML string
+# df=asdf.withColumn("RecordXml", parse_xml_udf(col('Record')))
 
-# Show the result
-df.show()
+# # Show the result
+# df.show()
 
 # # COMMAND ----------
 

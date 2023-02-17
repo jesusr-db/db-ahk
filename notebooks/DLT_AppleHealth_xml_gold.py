@@ -12,6 +12,7 @@ from pyspark.sql.functions import *
 from pyspark.sql.types import *
 from pyspark.sql.window import Window
 from pyspark.sql import Row
+from pyspark.ml.feature import Imputer
 
 # COMMAND ----------
 
@@ -116,6 +117,19 @@ def daily_mass_move_gold():
   
   joined = (hr.join(move,"dateDay","left")
                   .join(mass,"dateDay","left"))
+
+
+# fill in nulls with avg when  missed a weightlb
+
+impute_cols = [
+    "weightlb"
+]
+imputer = Imputer(strategy="median", inputCols=impute_cols, outputCols=impute_cols)
+
+imputer_model = imputer.fit(df)
+joined = imputer_model.transform(joined)
+
+# display(imputed_df.orderBy(col('dateDay').desc()))
 
 # weight fluctuates tremendously from day to day - this will have rolling 14 day window average
   w = (Window.orderBy(col("dateDay")).rowsBetween(-7, 7))
