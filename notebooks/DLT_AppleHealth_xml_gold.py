@@ -121,13 +121,13 @@ def daily_mass_move_gold():
 
 # fill in nulls with avg when  missed a weightlb
 
-impute_cols = [
-    "weightlb"
-]
-imputer = Imputer(strategy="median", inputCols=impute_cols, outputCols=impute_cols)
+  impute_cols = [
+      "weightlb"
+  ]
+  imputer = Imputer(strategy="median", inputCols=impute_cols, outputCols=impute_cols)
 
-imputer_model = imputer.fit(df)
-joined = imputer_model.transform(joined)
+  imputer_model = imputer.fit(df)
+  joined = imputer_model.transform(joined)
 
 # display(imputed_df.orderBy(col('dateDay').desc()))
 
