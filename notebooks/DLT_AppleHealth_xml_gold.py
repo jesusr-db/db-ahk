@@ -1,12 +1,28 @@
 # Databricks notebook source
-# MAGIC %pip install mlflow
+# MAGIC %md
+# MAGIC
+# MAGIC ## Joining tables while ensuring data quality
+# MAGIC
+# MAGIC
+# MAGIC Once we've defined our data in silver layer, we'll create the Gold layers by Joining data. We'll still be leveraging Expectations in this layer as they provide critical data quality checks throughout the entire process.
+# MAGIC
+# MAGIC #### Expectations
+# MAGIC
+# MAGIC DLT currently supports three modes for expectations:
+# MAGIC
+# MAGIC | Mode | Behavior |
+# MAGIC | ---- | -------- |
+# MAGIC | `EXPECT(criteria)` in SQL or `@dlt.expect` in Python  | Record metrics for percentage of records that violate expectation <br> (**NOTE**: this metric is reported for all execution modes) |
+# MAGIC | `EXPECT (criteria) ON VIOLATION FAIL UPDATE` in SQL or `@dlt.expect_or_fail` in Python| Fail the pipeline when expectation is not met |
+# MAGIC | `EXPECT (criteria) ON VIOLATION DROP ROW` in SQL or `@dlt.expect_or_drop` in Python| Only process records that fulfill expectations |
+# MAGIC
+# MAGIC See the [documentation](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-expectations.html) for more details
 
 # COMMAND ----------
 
 #setup Environment and Libraries
 
 import dlt
-import mlflow
 import datetime
 from pyspark.sql.functions import *
 from pyspark.sql.types import *
@@ -39,31 +55,6 @@ def workout_union():
   return (
     unioned.withColumn("kcal",col('value')).select(col("*"))
   )
-
-# COMMAND ----------
-
-# MAGIC %md
-# MAGIC 
-# MAGIC ## Silver layer: joining tables while ensuring data quality
-# MAGIC 
-# MAGIC 
-# MAGIC Once the bronze layer is defined, we'll create the sliver layers by Joining data. Note that bronze tables are referenced using the `LIVE` namespace. 
-# MAGIC 
-# MAGIC To consume only increment from the Bronze layer like `raw_txs`, we'll be using the `stream` keyword: `stream(LIVE.raw_txs)`
-# MAGIC 
-# MAGIC Note that we don't have to worry about compactions, DLT handles that for us.
-# MAGIC 
-# MAGIC #### Expectations
-# MAGIC 
-# MAGIC DLT currently supports three modes for expectations:
-# MAGIC 
-# MAGIC | Mode | Behavior |
-# MAGIC | ---- | -------- |
-# MAGIC | `EXPECT(criteria)` in SQL or `@dlt.expect` in Python  | Record metrics for percentage of records that violate expectation <br> (**NOTE**: this metric is reported for all execution modes) |
-# MAGIC | `EXPECT (criteria) ON VIOLATION FAIL UPDATE` in SQL or `@dlt.expect_or_fail` in Python| Fail the pipeline when expectation is not met |
-# MAGIC | `EXPECT (criteria) ON VIOLATION DROP ROW` in SQL or `@dlt.expect_or_drop` in Python| Only process records that fulfill expectations |
-# MAGIC 
-# MAGIC By defining expectations (`CONSTRAINT <name> EXPECT <condition>`), you can enforce and track your data quality. See the [documentation](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-expectations.html) for more details
 
 # COMMAND ----------
 
