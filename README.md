@@ -25,9 +25,13 @@ Welcome to the repository for the Databricks Delta Live Tables Apple HealthKit.
 
 This Delta Live Tables (DLT) demo was built to have a more realistic data engineering end-to end demo.  DLT is the first ETL framework that uses a simple declarative approach to building reliable data pipelines and automatically manages your infrastructure at scale. Data analysts and engineers spend less time on tooling and can focus on getting value from data. With DLT, engineers are able to treat their **data as code** and apply **modern software engineering best practices** like testing, error handling, monitoring, and documentation to deploy reliable pipelines at scale.
 
-Below is the overall dataflow of our pipeline
+## dataflow of our pipeline
 
 ![This is an image](https://github.com/jesusr-db/db-ahk/blob/main/images/SkillBuilder_%20DLT_JMR.png)
+
+## DLT pipeline Example
+![This is an image](https://github.com/jesusr-db/db-ahk/blob/main/images/DLTPipeline.png)
+
 
 ## Setup/Requirements
 - Follow Apple Support instructions on how to export Apple HealthKit data from health App.
