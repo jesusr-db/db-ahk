@@ -116,7 +116,7 @@ xmldata =(spark
 # display(xmldata)
 
 
-asdf=xmldata.filter(col("value").like("%<Record%")).withColumn("Record", trim(concat(col('value'),lit(' </Record>')))).select(col('Record'))
+asdf=xmldata.filter(col("value").like("%<Record%")).select(col('value'))
 display(asdf)
 
 
