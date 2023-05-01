@@ -41,3 +41,4 @@ Below is the overall dataflow of our pipeline
 - Use [Databricks Repos](https://docs.databricks.com/repos/index.html#clone-a-remote-git-repository) from your Databricks workspace to clone the repo and kick off the demo. The repo consists of the three notebooks listed above. The workflow definition is not part of the repo.
 - Trigger the DLT pipeline. Note, that although the pipeline is defined in the notebooks, you have to [create a pipeline first](https://docs.databricks.com/data-engineering/delta-live-tables/delta-live-tables-ui.html) to execute it.
 - Explore Metrics!
+![This is an image](https://github.com/jesusr-db/db-ahk/blob/main/images/DbSqlDash.png)
