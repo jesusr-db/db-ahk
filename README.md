@@ -29,11 +29,6 @@ Below is the overall dataflow of our pipeline
 
 ![This is an image](https://github.com/jesusr-db/db-ahk/blob/main/images/SkillBuilder_%20DLT_JMR.png)
 
-
-## Reading Resources
-
-* [Video of Demo on YouTube]()
-
 ## Setup/Requirements
 - Follow Apple Support instructions on how to export Apple HealthKit data from health App.
 - Bronze Notebook - For data acquisition - I've selected GoogleDrive and share link to download data. Bronze Notebook is setup to use this method. If you choose other export functions, YMMV.
