@@ -1,0 +1,6 @@
+{
+  "host": "https://e2-demo-field-eng.cloud.databricks.com/",
+  "authType": "profile",
+  "profile": "DEFAULT",
+  "workspacePath": "/Repos/jesus.rodriguez@databricks.com/jmr_vscode_push_ahk.ide"
+}
